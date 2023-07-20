@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Event observers used by the alpy course format.
+ * Event observers used by the weeks course format.
  *
- * @package format_alpy
+ * @package format_weeks
  * @copyright 2017 Mark Nelson <markn@moodle.com>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,9 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Event observer for format_alpy.
+ * Event observer for format_weeks.
  *
- * @package format_alpy
+ * @package format_weeks
  * @copyright 2017 Mark Nelson <markn@moodle.com>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -40,8 +40,8 @@ class format_alpy_observer {
      */
     public static function course_updated(\core\event\course_updated $event) {
         if (class_exists('format_alpy', false)) {
-            // If class format_alpy was never loaded, this is definitely not a course in 'alpy' format.
-            // Course may still be in another format but format_alpy::update_end_date() will check it.
+            // If class format_weeks was never loaded, this is definitely not a course in 'weeks' format.
+            // Course may still be in another format but format_weeks::update_end_date() will check it.
             format_alpy::update_end_date($event->courseid);
         }
     }
@@ -53,8 +53,8 @@ class format_alpy_observer {
      */
     public static function course_section_created(\core\event\course_section_created $event) {
         if (class_exists('format_alpy', false)) {
-            // If class format_alpy was never loaded, this is definitely not a course in 'alpy' format.
-            // Course may still be in another format but format_alpy::update_end_date() will check it.
+            // If class format_weeks was never loaded, this is definitely not a course in 'weeks' format.
+            // Course may still be in another format but format_weeks::update_end_date() will check it.
             format_alpy::update_end_date($event->courseid);
         }
     }
@@ -66,8 +66,8 @@ class format_alpy_observer {
      */
     public static function course_section_deleted(\core\event\course_section_deleted $event) {
         if (class_exists('format_alpy', false)) {
-            // If class format_alpy was never loaded, this is definitely not a course in 'alpy' format.
-            // Course may still be in another format but format_alpy::update_end_date() will check it.
+            // If class format_weeks was never loaded, this is definitely not a course in 'weeks' format.
+            // Course may still be in another format but format_weeks::update_end_date() will check it.
             format_alpy::update_end_date($event->courseid);
         }
     }

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Specialised restore for format_alpy
+ * Specialised restore for format_weeks
  *
- * @package   format_alpy
+ * @package   format_weeks
  * @category  backup
  * @copyright 2017 Marina Glancy
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,11 +26,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Specialised restore for format_alpy
+ * Specialised restore for format_weeks
  *
  * Processes 'numsections' from the old backup files and hides sections that used to be "orphaned"
  *
- * @package   format_alpy
+ * @package   format_weeks
  * @category  backup
  * @copyright 2017 Marina Glancy
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -65,7 +65,7 @@ class restore_format_alpy_plugin extends restore_format_plugin {
         // Get the current course format option.
         $params = array(
             'courseid' => $this->step->get_task()->get_courseid(),
-            'format' => 'alpy',
+            'format' => 'weeks',
             'sectionid' => 0,
             'name' => 'automaticenddate'
         );

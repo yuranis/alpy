@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Upgrade scripts for course format "alpy"
+ * Upgrade scripts for course format "Weeks"
  *
- * @package    format_alpy
+ * @package    format_weeks
  * @copyright  2017 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Upgrade script for format_alpy
+ * Upgrade script for format_weeks
  *
  * @param int $oldversion the version we are upgrading from
  * @return bool result

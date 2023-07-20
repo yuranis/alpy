@@ -15,15 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * alpy course format.  Display the whole course as "alpy" made of modules.
+ * Weeks course format.  Display the whole course as "weeks" made of modules.
  *
- * @package format_alpy
+ * @package format_weeks
  * @copyright 2006 The Open University
  * @author N.D.Freear@open.ac.uk, and others.
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
+
+global $CFG, $PAGE, $course;
 
 require_once($CFG->libdir.'/filelib.php');
 require_once($CFG->libdir.'/completionlib.php');
@@ -42,6 +44,7 @@ $course = course_get_format($course)->get_course();
 course_create_sections_if_missing($course, 0);
 
 $renderer = $PAGE->get_renderer('format_alpy');
+//$renderer = new alpy_course_renderer($PAGE, "format_alpy");
 
 if (!empty($displaysection)) {
     $renderer->print_single_section_page($course, null, null, null, null, $displaysection);

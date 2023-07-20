@@ -14,24 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace format_alpy;
+
 /**
- * Unit tests for the event observers used by the alpy course format.
+ * Unit tests for the event observers used by the weeks course format.
  *
- * @package format_alpy
+ * @package format_weeks
  * @copyright 2017 Mark Nelson <markn@moodle.com>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-/**
- * Unit tests for the event observers used by the alpy course format.
- *
- * @package format_alpy
- * @copyright 2017 Mark Nelson <markn@moodle.com>
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class format_alpy_observer_testcase extends advanced_testcase {
+class observer_test extends \advanced_testcase {
 
     /**
      * Test setup.
@@ -56,7 +48,7 @@ class format_alpy_observer_testcase extends advanced_testcase {
             'automaticenddate' => 1));
 
         // Ok, let's update the course start date.
-        $newstartdate = $startdate + alpyECS;
+        $newstartdate = $startdate + WEEKSECS;
         update_course((object)['id' => $course->id, 'startdate' => $newstartdate]);
 
         // Get the updated course end date.
@@ -103,7 +95,7 @@ class format_alpy_observer_testcase extends advanced_testcase {
 
         // Generate a course with some sections.
         $startdate = time();
-        $enddate = $startdate + alpyECS;
+        $enddate = $startdate + WEEKSECS;
         $course = $this->getDataGenerator()->create_course(array(
             'numsections' => 6,
             'format' => 'alpy',
@@ -112,7 +104,7 @@ class format_alpy_observer_testcase extends advanced_testcase {
             'automaticenddate' => 0));
 
         // Ok, let's update the course start date.
-        $newstartdate = $startdate + alpyECS;
+        $newstartdate = $startdate + WEEKSECS;
         update_course((object)['id' => $course->id, 'startdate' => $newstartdate]);
 
         // Get the updated course end date.
@@ -156,7 +148,7 @@ class format_alpy_observer_testcase extends advanced_testcase {
 
         // Generate a course with some sections.
         $startdate = time();
-        $enddate = $startdate + alpyECS;
+        $enddate = $startdate + WEEKSECS;
         $course = $this->getDataGenerator()->create_course(array(
             'numsections' => 6,
             'format' => 'alpy',

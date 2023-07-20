@@ -16,9 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'format_alpy', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'format_weeks', language 'en', branch 'MOODLE_20_STABLE'
  *
- * @package   format_alpy
+ * @package   format_weeks
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,8 +32,8 @@ $string['newsectionname'] = 'New name for week {$a}';
 $string['sectionname'] = 'Week';
 $string['pluginname'] = 'Alpy format';
 $string['section0name'] = 'General';
-$string['page-course-view-alpy'] = 'Any course main page in alpya format';
-$string['page-course-view-alpy-x'] = 'Any course page in alpy format';
+$string['page-course-view-weeks'] = 'Any course main page in weeks format';
+$string['page-course-view-weeks-x'] = 'Any course page in weeks format';
 $string['hidefromothers'] = 'Hide week';
 $string['showfromothers'] = 'Show week';
 $string['automaticenddate'] = 'Calculate the end date from the number of sections';

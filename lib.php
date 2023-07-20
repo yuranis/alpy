@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains main class for the course format alpy
+ * This file contains main class for the course format Alpy
  *
  * @since     Moodle 2.0
  * @package   format_alpy
@@ -24,43 +24,21 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+
 require_once($CFG->dirroot. '/course/format/lib.php');
 require_once($CFG->dirroot. '/course/lib.php');
+require_once($CFG->dirroot. '/course/renderer.php');
 
 /**
- * Main class for the alpy course format
+ * Main class for the Alpy course format
  *
- * @package    format_alpy
+ * @package    format_weeks
  * @copyright  2012 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class format_alpy extends format_base {
-
-    /**
-     * NUEVA YHN
-     */
-    public function get_activities_and_resources($sectionid) {
-        global $DB;
-        $mods = $DB->get_records_sql('SELECT cm.*, m.name as modname FROM {course_modules} cm
-            JOIN {modules} m ON m.id = cm.module
-            WHERE cm.section = ?', array($sectionid));
-
-        foreach($mods as $mod){
-            $mod->tags = core_tag_tag::get_item_tags_array('core', 'course_modules', $mod->id);
-        }
-
-        return $mods;
-    }
-    public function get_weeks() {
-        global $DB;
-        $courseid = $this->get_courseid();
-        $weeks = $DB->get_records_sql('SELECT * FROM {course_sections} WHERE course = ?', array($courseid));
-        return $weeks;
-    }
-    public function get_tags_for_resource($cmid) {
-        $tags = core_tag_tag::get_item_tags_array('core', 'course_modules', $cmid);
-        return $tags;
-    }
 
     /**
      * Returns true if this course format uses sections
@@ -219,7 +197,7 @@ class format_alpy extends format_base {
         $current = -1;
         $course = $this->get_course();
         $modinfo = get_fast_modinfo($course);
-        $renderer = $this->get_renderer($PAGE);
+        $renderer = format_alpy_get_course_renderer($PAGE);
         if ($renderer && ($sections = $modinfo->get_section_info_all())) {
             foreach ($sections as $number => $section) {
                 $titles[$number] = $renderer->section_title($section, $course);
@@ -247,7 +225,7 @@ class format_alpy extends format_base {
     /**
      * Definitions of the additional options that this course format uses for course
      *
-     * alpy format uses the following options:
+     * Alpy format uses the following options:
      * - coursedisplay
      * - hiddensections
      * - automaticenddate
@@ -332,7 +310,7 @@ class format_alpy extends format_base {
             // delete and add sections when needed.
             $courseconfig = get_config('moodlecourse');
             $max = (int)$courseconfig->maxsections;
-            $element = $mform->addElement('select', 'numsections', get_string('numberalpy'), range(0, $max ?: 52));
+            $element = $mform->addElement('select', 'numsections', get_string('numberweeks'), range(0, $max ?: 52));
             $mform->setType('numsections', PARAM_INT);
             if (is_null($mform->getElementValue('numsections'))) {
                 $mform->setDefault('numsections', $courseconfig->numsections);
@@ -403,14 +381,14 @@ class format_alpy extends format_base {
         } else {
             $sectionnum = $section;
         }
-        $onealpyeconds = 604800;
+        $oneweekseconds = 604800;
         // Hack alert. We add 2 hours to avoid possible DST problems. (e.g. we go into daylight
         // savings and the date changes.
         $startdate = $startdate + 7200;
 
         $dates = new stdClass();
-        $dates->start = $startdate + ($onealpyeconds * ($sectionnum - 1));
-        $dates->end = $dates->start + $onealpyeconds;
+        $dates->start = $startdate + ($oneweekseconds * ($sectionnum - 1));
+        $dates->end = $dates->start + $oneweekseconds;
 
         return $dates;
     }
@@ -530,7 +508,7 @@ class format_alpy extends format_base {
 
         // Call the parent method and return the new content for .section_availability element.
         $rv = parent::section_action($section, $action, $sr);
-        $renderer = $PAGE->get_renderer('format_alpy');
+        $renderer = format_alpy_get_course_renderer('format_alpy');
         $rv['section_availability'] = $renderer->section_availability($this->get_section($section));
         return $rv;
     }
@@ -547,7 +525,7 @@ class format_alpy extends format_base {
         global $DB, $COURSE;
 
         // Use one DB query to retrieve necessary fields in course, value for automaticenddate and number of the last
-        // section. This query will also validate that the course is indeed in 'alpy' format.
+        // section. This query will also validate that the course is indeed in 'weeks' format.
         $insql = "SELECT c.id, c.format, c.startdate, c.enddate, MAX(s.section) AS lastsection
                     FROM {course} c
                     JOIN {course_sections} s
@@ -621,7 +599,13 @@ function format_alpy_inplace_editable($itemtype, $itemid, $newvalue) {
     if ($itemtype === 'sectionname' || $itemtype === 'sectionnamenl') {
         $section = $DB->get_record_sql(
             'SELECT s.* FROM {course_sections} s JOIN {course} c ON s.course = c.id WHERE s.id = ? AND c.format = ?',
-            array($itemid, 'alpy'), MUST_EXIST);
+            array($itemid, 'weeks'), MUST_EXIST);
         return course_get_format($section->course)->inplace_editable_update_section_name($section, $itemtype, $newvalue);
     }
+}
+
+function format_alpy_get_course_renderer(moodle_page $page, $target = RENDERER_TARGET_GENERAL) {
+    global $CFG;
+    require_once($CFG->dirroot . '/course/format/alpy/course_renderer.php');
+    return new format_alpy_course_renderer($page, $target);
 }

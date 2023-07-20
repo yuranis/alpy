@@ -1,4 +1,4 @@
-// Javascript functions for alpy course format
+// Javascript functions for Weeks course format
 
 M.course = M.course || {};
 
@@ -8,7 +8,7 @@ M.course.format = M.course.format || {};
  * Get sections config for this format
  *
  * The section structure is:
- * <ul class="alpy">
+ * <ul class="weeks">
  *  <li class="section">...</li>
  *  <li class="section">...</li>
  *   ...
@@ -19,7 +19,7 @@ M.course.format = M.course.format || {};
 M.course.format.get_config = function() {
     return {
         container_node : 'ul',
-        container_class : 'alpy',
+        container_class : 'weeks',
         section_node : 'li',
         section_class : 'section'
     };
@@ -86,8 +86,6 @@ M.course.format.process_sections = function(Y, sectionlist, response, sectionfro
             stridx = str.lastIndexOf(' ');
             newstr = str.substr(0, stridx +1) + i;
             ele.setAttribute('title', newstr);
-            // Update the aria-label for the section.
-            sectionlist.item(i).setAttribute('aria-label', content.get('innerText').trim());
 
             // Remove the current class as section has been moved.
             sectionlist.item(i).removeClass('current');

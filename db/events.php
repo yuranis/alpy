@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Format alpy event handler definition.
+ * Format weeks event handler definition.
  *
  * @package format_alpy
  * @copyright 2017 Mark Nelson <markn@moodle.com>
