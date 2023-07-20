@@ -319,7 +319,7 @@ class format_alpy_renderer extends format_section_renderer_base
      */
     public function course_section_cm($course, &$completioninfo, cm_info $mod, $sectionreturn, $displayoptions = array())
     {
-        global $USER;
+        global $USER, $DB, $COURSE;
 
         $output = '';
         // We return empty string (because course module will not be displayed at all)
@@ -412,7 +412,29 @@ class format_alpy_renderer extends format_section_renderer_base
             $output .= $this->output->activity_information($mod, $completiondetails, $activitydates);
         }
 
-        //YURY Show availability info (if module is not available).
+        // YURY Get the tags for this module.
+        $tags = \core_tag_tag::get_item_tags('core', 'course_modules', $mod->id);
+        $context = context_course::instance($COURSE->id);
+        $roles = get_user_roles($context, $USER->id, false);
+        $isTeacher = false;
+
+        foreach ($roles as $role) {
+            $roleid = $role->roleid;
+            $role = $DB->get_record('role', array('id' => $roleid));
+            if ($role->shortname == 'editingteacher' || $role->shortname == 'teacher') {
+                $isTeacher = true;
+                break;
+            }
+        }
+
+        if (!$isTeacher && !is_siteadmin($USER)) {
+            if (!$this->learning_style($tags)) {
+                return "";
+            }
+        }
+        // END YURY
+
+        // Show availability info (if module is not available).
         $output .= $this->course_section_cm_availability($mod, $displayoptions);
 
         // If there is content AND a link, then display the content here
@@ -526,25 +548,26 @@ class format_alpy_renderer extends format_section_renderer_base
         $records = $DB->get_records_sql($sql, array($USER->id), 0, 1);
 
         if ($records) {
-            $record = reset($records); // Get the first (and only) record from the returned records
+            $record = reset($records);
         }
+        if (isset($record)) {
+            if ($record) {
+                $tagValues = [
+                    'active' => $record->act_ref[1] == "a",
+                    'reflexive' => $record->act_ref[1] != "a",
+                    'sensitive' => $record->sen_int[1] == "a",
+                    'intuitive' => $record->sen_int[1] != "a",
+                    'visual' => $record->vis_vrb[1] == "a",
+                    'verbal' => $record->vis_vrb[1] != "a",
+                    'sequential' => $record->seq_glo[1] == "a",
+                    'global' => $record->seq_glo[1] != "a",
+                ];
 
-        if ($record) {
-            $tagValues = [
-                'active' => $record->act_ref[1] == "a",
-                'reflexive' => $record->act_ref[1] != "a",
-                'sensitive' => $record->sen_int[1] == "a",
-                'intuitive' => $record->sen_int[1] != "a",
-                'visual' => $record->vis_vrb[1] == "a",
-                'verbal' => $record->vis_vrb[1] != "a",
-                'sequential' => $record->seq_glo[1] == "a",
-                'global' => $record->seq_glo[1] != "a",
-            ];
-
-            foreach ($tags as $tag) {
-                $tagName = $tag->get_display_name();
-                if (isset($tagValues[$tagName]) && $tagValues[$tagName]) {
-                    return true;
+                foreach ($tags as $tag) {
+                    $tagName = $tag->get_display_name();
+                    if (isset($tagValues[$tagName]) && $tagValues[$tagName]) {
+                        return true;
+                    }
                 }
             }
         }
