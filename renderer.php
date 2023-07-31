@@ -414,6 +414,7 @@ class format_alpy_renderer extends format_section_renderer_base
 
         // YURY Get the tags for this module.
         $tags = \core_tag_tag::get_item_tags('core', 'course_modules', $mod->id);
+        // Revisar si es profesor o administrador
         $context = context_course::instance($COURSE->id);
         $roles = get_user_roles($context, $USER->id, false);
         $isTeacher = false;
@@ -426,7 +427,7 @@ class format_alpy_renderer extends format_section_renderer_base
                 break;
             }
         }
-
+        // evaluar la visibilidad al estudiante
         if (!$isTeacher && !is_siteadmin($USER)) {
             if (!$this->learning_style($tags)) {
                 return "";
@@ -462,7 +463,7 @@ class format_alpy_renderer extends format_section_renderer_base
      */
     public function course_section_cm_availability(cm_info $mod, $displayoptions = array())
     {
-        global $CFG;
+        global $CFG, $COURSE, $DB, $USER;
         $output = '';
         if (!$mod->is_visible_on_course_page()) {
             return $output;
@@ -485,14 +486,30 @@ class format_alpy_renderer extends format_section_renderer_base
         $canviewhidden = has_capability('moodle/course:viewhiddenactivities', $modcontext);
 
         // YURY Get the tags for this module.
-        $tags = \core_tag_tag::get_item_tags('core', 'course_modules', $mod->id);
-        foreach ($tags as $tag) {
-            $output .= html_writer::tag('span', $tag->get_display_name(), array('class' => 'badge badge-info'));
+        $context = context_course::instance($COURSE->id);
+        $roles = get_user_roles($context, $USER->id, false);
+        $isTeacher = false;
+
+        foreach ($roles as $role) {
+            $roleid = $role->roleid;
+            $role = $DB->get_record('role', array('id' => $roleid));
+            if ($role->shortname == 'editingteacher' || $role->shortname == 'teacher') {
+                $isTeacher = true;
+                break;
+            }
         }
-        if (!$this->learning_style($tags)) {
+        $tags = \core_tag_tag::get_item_tags('core', 'course_modules', $mod->id);
+        // evaluar la visibilidad al estudiante
+        if ($isTeacher || is_siteadmin($USER)) {
+            foreach ($tags as $tag) {
+                $output .= html_writer::tag('span', $tag->get_display_name(), array('class' => 'badge badge-info'));
+            }
+        }
+
+        /*if (!$this->learning_style($tags)) {
             $output .= $this->availability_info(get_string('hiddenfromstudents'), 'ishidden');
             return $output;
-        }
+        }*/
         // END YURY
 
         if ($canviewhidden && !$mod->visible) {
@@ -528,6 +545,7 @@ class format_alpy_renderer extends format_section_renderer_base
         return $output;
     }
 
+    // YURY
     /**
      * Generate the availability info for a module according to the learning style
      *
