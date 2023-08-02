@@ -97,3 +97,16 @@ M.course.format.process_sections = function(Y, sectionlist, response, sectionfro
         }
     }
 }
+
+$(document).ready(function() {
+    $('ul').each(function() {
+        var mylist = $(this);
+        var listitems = mylist.children('li[class^="alpy-"]').get();
+        listitems.sort(function(a, b) {
+            var compA = parseInt($(a).attr('class').split('-')[1]);
+            var compB = parseInt($(b).attr('class').split('-')[1]);
+            return (compA > compB) ? -1 : (compA < compB) ? 1 : 0;
+        })
+        $.each(listitems, function(idx, itm) { mylist.append(itm); });
+    });
+});

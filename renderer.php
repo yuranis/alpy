@@ -291,10 +291,88 @@ class format_alpy_renderer extends format_section_renderer_base
                 // This will apply styles to the course homepage when the activity information output component is displayed.
                 $infoclass = 'hasinfo';
             }
-            $modclasses = 'activity ' . $mod->modname . ' modtype_' . $mod->modname . ' ' . $mod->extraclasses . ' ' . $infoclass;
+            // ----- YURY
+            $tags = \core_tag_tag::get_item_tags('core', 'course_modules', $mod->id);
+            $modclasses = $this->learning_style_class($tags) . ' activity ' . $mod->modname . ' modtype_' . $mod->modname . ' ' . $mod->extraclasses . ' ' . $infoclass;
             $output .= html_writer::tag('li', $modulehtml, array('class' => $modclasses, 'id' => 'module-' . $mod->id));
         }
         return $output;
+    }
+
+    // ---- YURY
+    /**
+     * Generate the availability info for a module according to the learning style
+     *
+     * @param $tags
+     * @return bool
+     * @throws dml_exception
+     */
+    public function learning_style_class($tags)
+    {
+
+        if (empty($tags)) {
+            return "";
+        }
+
+        global $DB, $USER;
+
+        $recurso = array(
+            'mapa' => array('active' => 3, 'reflexive' => 1, 'sensitive' => 1, 'intuitive' => 1, 'visual' => 3, 'verbal' => 1, 'sequential' => 1, 'global' => 1),
+            'diagrama' => array('active' => 1, 'reflexive' => 1, 'sensitive' => 1, 'intuitive' => 1, 'visual' => 3, 'verbal' => 1, 'sequential' => 1, 'global' => 1),
+            'lectura' => array('active' => 3, 'reflexive' => 2, 'sensitive' => 2, 'intuitive' => 3, 'visual' => 2, 'verbal' => 3, 'sequential' => 2, 'global' => 3),
+            'audio' => array('active' => 1, 'reflexive' => 1, 'sensitive' => 1, 'intuitive' => 1, 'visual' => 1, 'verbal' => 3, 'sequential' => 1, 'global' => 2),
+            'infografia' => array('active' => 1, 'reflexive' => 1, 'sensitive' => 1, 'intuitive' => 1, 'visual' => 3, 'verbal' => 1, 'sequential' => 1, 'global' => 2),
+            'videotutorial' => array('active' => 2, 'reflexive' => 2, 'sensitive' => 2, 'intuitive' => 1, 'visual' => 3, 'verbal' => 2, 'sequential' => 3, 'global' => 1),
+            'videoconferencia' => array('active' => 2, 'reflexive' => 2, 'sensitive' => 3, 'intuitive' => 3, 'visual' => 2, 'verbal' => 3, 'sequential' => 1, 'global' => 2),
+            'animacion' => array('active' => 1, 'reflexive' => 1, 'sensitive' => 2, 'intuitive' => 1, 'visual' => 2, 'verbal' => 1, 'sequential' => 2, 'global' => 3),
+            'simulacion' => array('active' => 2, 'reflexive' => 1, 'sensitive' => 3, 'intuitive' => 3, 'visual' => 3, 'verbal' => 1, 'sequential' => 2, 'global' => 2),
+            'presentacion' => array('active' => 2, 'reflexive' => 1, 'sensitive' => 2, 'intuitive' => 2, 'visual' => 3, 'verbal' => 1, 'sequential' => 3, 'global' => 2),
+            'diario' => array('active' => 1, 'reflexive' => 3, 'sensitive' => 1, 'intuitive' => 1, 'visual' => 1, 'verbal' => 1, 'sequential' => 1, 'global' => 1),
+            'busqueda' => array('active' => 3, 'reflexive' => 3, 'sensitive' => 1, 'intuitive' => 3, 'visual' => 1, 'verbal' => 1, 'sequential' => 1, 'global' => 1),
+            'vpl' => array('active' => 2, 'reflexive' => 2, 'sensitive' => 3, 'intuitive' => 2, 'visual' => 2, 'verbal' => 2, 'sequential' => 2, 'global' => 2),
+            'debate' => array('active' => 3, 'reflexive' => 2, 'sensitive' => 2, 'intuitive' => 1, 'visual' => 1, 'verbal' => 3, 'sequential' => 2, 'global' => 1),
+            'proyecto' => array('active' => 2, 'reflexive' => 2, 'sensitive' => 3, 'intuitive' => 1, 'visual' => 2, 'verbal' => 2, 'sequential' => 3, 'global' => 2),
+            'escrito' => array('active' => 1, 'reflexive' => 1, 'sensitive' => 1, 'intuitive' => 1, 'visual' => 3, 'verbal' => 1, 'sequential' => 1, 'global' => 3),
+            'cuestionario' => array('active' => 3, 'reflexive' => 3, 'sensitive' => 1, 'intuitive' => 3, 'visual' => 1, 'verbal' => 1, 'sequential' => 1, 'global' => 1),
+            'quiz' => array('active' => 3, 'reflexive' => 3, 'sensitive' => 1, 'intuitive' => 3, 'visual' => 1, 'verbal' => 1, 'sequential' => 1, 'global' => 1),
+        );
+
+        $sql = "SELECT * FROM {learning_style} WHERE user = ? ORDER BY id DESC";
+        $records = $DB->get_records_sql($sql, array($USER->id), 0, 1);
+
+        if ($records) {
+            $record = reset($records);
+        }
+        if (isset($record)) {
+            if ($record) {
+                $learning_style = [
+                    'active' => $record->act_ref[1] == "a",
+                    'reflexive' => $record->act_ref[1] != "a",
+                    'sensitive' => $record->sen_int[1] == "a",
+                    'intuitive' => $record->sen_int[1] != "a",
+                    'visual' => $record->vis_vrb[1] == "a",
+                    'verbal' => $record->vis_vrb[1] != "a",
+                    'sequential' => $record->seq_glo[1] == "a",
+                    'global' => $record->seq_glo[1] != "a",
+                ];
+
+                foreach ($tags as $tag) {
+                    $tagName = $tag->get_display_name();
+
+                    if (array_key_exists($tagName, $recurso)) {
+                        $tagValue = 0;
+
+                        foreach ($learning_style as $key => $value) {
+                            if ($value) {
+                                $tagValue += $recurso[$tagName][$key];
+                            }
+                        }
+
+                        return "alpy-$tagValue";
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -412,7 +490,7 @@ class format_alpy_renderer extends format_section_renderer_base
             $output .= $this->output->activity_information($mod, $completiondetails, $activitydates);
         }
 
-        // YURY Get the tags for this module.
+        // ---- YURY
         $tags = \core_tag_tag::get_item_tags('core', 'course_modules', $mod->id);
         // Revisar si es profesor o administrador
         $context = context_course::instance($COURSE->id);
@@ -428,11 +506,11 @@ class format_alpy_renderer extends format_section_renderer_base
             }
         }
         // evaluar la visibilidad al estudiante
-        if (!$isTeacher && !is_siteadmin($USER)) {
+        /*if (!$isTeacher && !is_siteadmin($USER)) {
             if (!$this->learning_style($tags)) {
-                return "";
+                return $cmname;
             }
-        }
+        }*/
         // END YURY
 
         // Show availability info (if module is not available).
@@ -485,11 +563,13 @@ class format_alpy_renderer extends format_section_renderer_base
         $modcontext = context_module::instance($mod->id);
         $canviewhidden = has_capability('moodle/course:viewhiddenactivities', $modcontext);
 
-        // YURY Get the tags for this module.
+        // ---- YURY 
+        
+         // revisar si es profesor o administrador
         $context = context_course::instance($COURSE->id);
         $roles = get_user_roles($context, $USER->id, false);
         $isTeacher = false;
-
+       
         foreach ($roles as $role) {
             $roleid = $role->roleid;
             $role = $DB->get_record('role', array('id' => $roleid));
@@ -506,10 +586,6 @@ class format_alpy_renderer extends format_section_renderer_base
             }
         }
 
-        /*if (!$this->learning_style($tags)) {
-            $output .= $this->availability_info(get_string('hiddenfromstudents'), 'ishidden');
-            return $output;
-        }*/
         // END YURY
 
         if ($canviewhidden && !$mod->visible) {
@@ -545,7 +621,7 @@ class format_alpy_renderer extends format_section_renderer_base
         return $output;
     }
 
-    // YURY
+    // ---- YURY
     /**
      * Generate the availability info for a module according to the learning style
      *
