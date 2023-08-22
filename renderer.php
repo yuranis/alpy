@@ -357,7 +357,7 @@ class format_alpy_renderer extends format_section_renderer_base
                 ];
 
                 foreach ($tags as $tag) {
-                    $tagName = $tag->get_display_name();
+                    $tagName = strtolower($tag->get_display_name());
 
                     if (array_key_exists($tagName, $recurso)) {
                         $tagValue = 0;
@@ -368,7 +368,7 @@ class format_alpy_renderer extends format_section_renderer_base
                             }
                         }
 
-                        return "alpy-$tagValue";
+                        return "alpy-$tagValue learning-$tagName";
                     }
                 }
             }

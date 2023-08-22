@@ -110,3 +110,25 @@ $(document).ready(function() {
         $.each(listitems, function(idx, itm) { mylist.append(itm); });
     });
 });
+
+$(document).ready(function() {
+    $('li[class^="alpy-"]').each(function() {
+        var icon = $(this).find('img.activityicon'); // Buscar el icono dentro del elemento li
+
+        // Obtener todas las clases y buscar la que comienza con "learning-"
+        var classes = $(this).attr('class').split(/\s+/);
+        var learningValue = null;
+        for (var cls of classes) {
+            if (cls.startsWith("learning-")) {
+                learningValue = cls.split('-')[1];
+                break;
+            }
+        }
+
+        if (learningValue && icon.length > 0) {
+            var newUrl = '/blocks/learning_style/pix/' + learningValue.toLowerCase() + '.png';
+            icon.attr('src', newUrl); // Cambiar la URL del icono
+        }
+    });
+});
+
