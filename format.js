@@ -106,16 +106,16 @@ $(document).ready(function() {
             var compA = parseInt($(a).attr('class').split('-')[1]);
             var compB = parseInt($(b).attr('class').split('-')[1]);
             return (compA > compB) ? -1 : (compA < compB) ? 1 : 0;
-        })
+        });
         $.each(listitems, function(idx, itm) { mylist.append(itm); });
     });
 });
 
+/*
 $(document).ready(function() {
     $('li[class^="alpy-"]').each(function() {
         var icon = $(this).find('img.activityicon'); // Buscar el icono dentro del elemento li
 
-        // Obtener todas las clases y buscar la que comienza con "learning-"
         var classes = $(this).attr('class').split(/\s+/);
         var learningValue = null;
         for (var cls of classes) {
@@ -131,4 +131,5 @@ $(document).ready(function() {
         }
     });
 });
+*/
 
