@@ -111,8 +111,9 @@ $(document).ready(function() {
     });
 });
 
-/*
+
 $(document).ready(function() {
+    console.log("hola cambio");
     $('li[class^="alpy-"]').each(function() {
         var icon = $(this).find('img.activityicon'); // Buscar el icono dentro del elemento li
 
@@ -121,6 +122,7 @@ $(document).ready(function() {
         for (var cls of classes) {
             if (cls.startsWith("learning-")) {
                 learningValue = cls.split('-')[1];
+                console.log(learningValue);
                 break;
             }
         }
@@ -128,8 +130,7 @@ $(document).ready(function() {
         if (learningValue && icon.length > 0) {
             var newUrl = '/blocks/learning_style/pix/' + learningValue.toLowerCase() + '.png';
             icon.attr('src', newUrl); // Cambiar la URL del icono
+            icon.attr('title',learningValue.toLowerCase());
         }
     });
 });
-*/
-

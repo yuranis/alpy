@@ -291,7 +291,7 @@ class format_alpy_renderer extends format_section_renderer_base
                 // This will apply styles to the course homepage when the activity information output component is displayed.
                 $infoclass = 'hasinfo';
             }
-            // ----- YURY
+            // ----- ALPY
             $tags = \core_tag_tag::get_item_tags('core', 'course_modules', $mod->id);
             $modclasses = $this->learning_style_class($tags) . ' activity ' . $mod->modname . ' modtype_' . $mod->modname . ' ' . $mod->extraclasses . ' ' . $infoclass;
             $output .= html_writer::tag('li', $modulehtml, array('class' => $modclasses, 'id' => 'module-' . $mod->id));
@@ -309,7 +309,6 @@ class format_alpy_renderer extends format_section_renderer_base
      */
     public function learning_style_class($tags)
     {
-
         if (empty($tags)) {
             return "";
         }
@@ -358,7 +357,7 @@ class format_alpy_renderer extends format_section_renderer_base
 
                 foreach ($tags as $tag) {
                     $tagName = strtolower($tag->get_display_name());
-
+                    print_r($tagName);
                     if (array_key_exists($tagName, $recurso)) {
                         $tagValue = 0;
 
@@ -367,7 +366,6 @@ class format_alpy_renderer extends format_section_renderer_base
                                 $tagValue += $recurso[$tagName][$key];
                             }
                         }
-
                         return "alpy-$tagValue learning-$tagName";
                     }
                 }
