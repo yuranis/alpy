@@ -345,25 +345,23 @@ class format_alpy_renderer extends format_section_renderer_base
         if (isset($record)) {
             if ($record) {
                 $learning_style = [
-                    'active' => $record->act_ref[1] == "a",
-                    'reflexive' => $record->act_ref[1] != "a",
-                    'sensitive' => $record->sen_int[1] == "a",
-                    'intuitive' => $record->sen_int[1] != "a",
-                    'visual' => $record->vis_vrb[1] == "a",
-                    'verbal' => $record->vis_vrb[1] != "a",
-                    'sequential' => $record->seq_glo[1] == "a",
-                    'global' => $record->seq_glo[1] != "a",
-                ];
+                    'active' => $record->act_ref[1] == "a" ? preg_replace('/[^0-9]/', '', $record->act_ref) : 0,
+                    'reflexive' => $record->act_ref[1] != "a" ? preg_replace('/[^0-9]/', '', $record->act_ref) : 0,
+                    'sensitive' => $record->sen_int[1] == "a" ? preg_replace('/[^0-9]/', '', $record->sen_int) : 0,
+                    'intuitive' => $record->sen_int[1] != "a" ? preg_replace('/[^0-9]/', '', $record->sen_int) : 0,
+                    'visual' => $record->vis_vrb[1] == "a" ? preg_replace('/[^0-9]/', '', $record->vis_vrb) : 0,
+                    'verbal' => $record->vis_vrb[1] != "a" ? preg_replace('/[^0-9]/', '', $record->vis_vrb) : 0,
+                    'sequential' => $record->seq_glo[1] == "a" ? preg_replace('/[^0-9]/', '', $record->seq_glo) : 0,
+                    'global' => $record->seq_glo[1] != "a" ? preg_replace('/[^0-9]/', '', $record->seq_glo) : 0,
+                ];                
 
                 foreach ($tags as $tag) {
                     $tagName = strtolower($tag->get_display_name());
-                    // print_r($tagName);
                     if (array_key_exists($tagName, $recurso)) {
                         $tagValue = 0;
-
                         foreach ($learning_style as $key => $value) {
-                            if ($value) {
-                                $tagValue += $recurso[$tagName][$key];
+                            if ($value != 0) {
+                                $tagValue += $recurso[$tagName][$key] * $learning_style[$key];
                             }
                         }
                         return "alpy-$tagValue learning-$tagName";
